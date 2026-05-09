@@ -2,7 +2,7 @@ import React from 'react';
 import ToolInterface from './ToolInterface';
 import { organizePdf } from '../../lib/pdf-utils';
 
-export default function OrganizePDF({ tool }) {
+export default function SplitPDF({ tool }) {
   const handleProcess = async (files, options) => {
     return await organizePdf(files, options);
   };

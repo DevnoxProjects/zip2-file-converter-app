@@ -11,6 +11,7 @@ export default function RotatePDF({ tool }) {
     <ToolInterface 
       tool={tool}
       onProcess={handleProcess}
+      allowedTypes={['application/pdf', 'image/jpeg', 'image/png', 'application/zip']}
       customDropzoneText="Select PDFs to rotate"
       customProcessText="Rotate PDF"
     />

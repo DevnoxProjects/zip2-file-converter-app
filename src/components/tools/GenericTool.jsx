@@ -69,9 +69,9 @@ export default function GenericTool({ tool }) {
       case 'redact-pdf':
       case 'compare-pdf':
       case 'translate-pdf':
-        return ['application/pdf', '.pdf'];
+        return ['application/pdf', '.pdf', 'image/jpeg', 'image/png', 'application/zip'];
       default:
-        return ['application/pdf', '.pdf'];
+        return ['application/pdf', '.pdf', 'image/jpeg', 'image/png', 'application/zip'];
     }
   };
 

@@ -11,7 +11,7 @@ export default function MergePDF({ tool }) {
     <ToolInterface 
       tool={tool}
       onProcess={handleProcess}
-      allowedTypes={['application/pdf', 'image/jpeg', 'image/jpg', 'image/png']}
+      allowedTypes={['application/pdf', 'image/jpeg', 'image/jpg', 'image/png', 'application/zip']}
       customDropzoneText="Merge PDFs & Images into one PDF"
       customProcessText="Merge and Optimize"
     />

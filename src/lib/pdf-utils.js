@@ -101,8 +101,13 @@ export async function mergePdfs(files, options = {}) {
         continue;
       }
     } else {
-      const bytes = await file.arrayBuffer();
-      pdf = await PDFDocument.load(bytes);
+      try {
+        const bytes = await file.arrayBuffer();
+        pdf = await PDFDocument.load(bytes);
+      } catch (e) {
+        console.error(`Failed to load PDF file ${file.name}:`, e);
+        continue; // Skip this file if it's invalid
+      }
     }
 
     if (pdf) {
@@ -416,18 +421,25 @@ async function compressImage(file, targetSizeMB) {
 }
 
 export async function rotatePdfs(files, options = {}) {
-  const { compression } = options;
+  const { compression, rotations } = options;
   const targetSize = getTargetSize(options);
   
   const mergedPdf = await PDFDocument.create();
-  for (const file of files) {
+  for (let i = 0; i < files.length; i++) {
+    const file = files[i];
+    const rotation = rotations ? (rotations[i] || 0) : 0;
     const bytes = await file.arrayBuffer();
     const pdf = await PDFDocument.load(bytes);
     const copiedPages = await mergedPdf.copyPages(pdf, pdf.getPageIndices());
     
     for (const page of copiedPages) {
       const currentRotation = page.getRotation().angle;
-      page.setRotation({ angle: (currentRotation + 90) % 360 });
+      // If manual rotations were set, we respect them.
+      // Otherwise, we default to 90deg for the Global Rotate tool.
+      const hasManualRotations = rotations && rotations.some(r => r !== 0);
+      const finalRotation = hasManualRotations ? (currentRotation + rotation) % 360 : (currentRotation + 90) % 360;
+      
+      page.setRotation({ angle: finalRotation });
       
       if (targetSize) {
         await resizePage(page, targetSize);
@@ -451,11 +463,13 @@ export async function rotatePdfs(files, options = {}) {
 }
 
 export async function jpgToPdf(files, options = {}) {
-  const { compression } = options;
+  const { compression, rotations } = options;
   const targetSize = getTargetSize(options);
   
   const pdfDoc = await PDFDocument.create();
-  for (const file of files) {
+  for (let i = 0; i < files.length; i++) {
+    const file = files[i];
+    const rotation = rotations ? (rotations[i] || 0) : 0;
     let imageBytes;
     if (compression?.enabled) {
       // Functional compression by re-encoding images
@@ -487,6 +501,7 @@ export async function jpgToPdf(files, options = {}) {
       y,
       width: image.width * scale,
       height: image.height * scale,
+      rotate: { type: 'degrees', angle: rotation }
     });
   }
   const bytes = await pdfDoc.save({
@@ -615,6 +630,48 @@ export async function splitPdfToPages(file) {
     pages.push(new File([pdfBytes], `${fileName}_page_${i + 1}.pdf`, { type: 'application/pdf' }));
   }
   return pages;
+}
+
+export async function splitPdf(files, options = {}) {
+  const { onProgress, rotations } = options;
+  const zip = new JSZip();
+  
+  if (onProgress) onProgress(5);
+  
+  for (let i = 0; i < files.length; i++) {
+    const file = files[i];
+    const rotation = rotations ? (rotations[i] || 0) : 0;
+    
+    // Page files are already split by ToolInterface when shouldSplitPdf is true
+    let pdfBytes;
+    if (rotation !== 0) {
+      try {
+        const bytes = await file.arrayBuffer();
+        const pdfDoc = await PDFDocument.load(bytes);
+        const page = pdfDoc.getPages()[0];
+        if (page) {
+          const currentRotation = page.getRotation().angle;
+          page.setRotation({ angle: (currentRotation + rotation) % 360 });
+        }
+        pdfBytes = await pdfDoc.save();
+      } catch (err) {
+        console.warn(`Failed to rotate page ${i + 1} during split:`, err);
+        pdfBytes = await file.arrayBuffer();
+      }
+    } else {
+      pdfBytes = await file.arrayBuffer();
+    }
+    
+    zip.file(file.name, pdfBytes);
+    
+    if (onProgress) {
+      onProgress(5 + ((i + 1) / files.length) * 90);
+    }
+  }
+
+  const content = await zip.generateAsync({ type: 'blob', mimeType: 'application/zip' });
+  if (onProgress) onProgress(100);
+  return content;
 }
 
 export async function organizePdf(files, options = {}) {

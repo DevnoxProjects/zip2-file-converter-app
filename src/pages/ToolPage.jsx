@@ -13,6 +13,7 @@ import RemovePages from '../components/tools/RemovePages';
 import UnlockPDF from '../components/tools/UnlockPDF';
 import AISummarizer from '../components/tools/AISummarizer';
 import OrganizePDF from '../components/tools/OrganizePDF';
+import SplitPDF from '../components/tools/SplitPDF';
 import GenericTool from '../components/tools/GenericTool';
 
 const TOOL_COMPONENTS = {
@@ -25,6 +26,7 @@ const TOOL_COMPONENTS = {
   'unlock-pdf': UnlockPDF,
   'ai-summarizer': AISummarizer,
   'organize-pdf': OrganizePDF,
+  'split-pdf': SplitPDF,
   // Add more as they are created
 };
 

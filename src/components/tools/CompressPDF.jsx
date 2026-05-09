@@ -11,6 +11,7 @@ export default function CompressPDF({ tool }) {
     <ToolInterface 
       tool={tool}
       onProcess={handleProcess}
+      allowedTypes={['application/pdf', 'image/jpeg', 'image/png', 'application/zip']}
       customDropzoneText="Select PDF to compress"
       customProcessText="Compress PDF"
     />
