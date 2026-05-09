@@ -12,7 +12,6 @@ Zip2 is a browser-based web app that provides a collection of PDF and file utili
 - **Remove / Organize** pages
 - **Protect / Unlock** PDF security
 - **Convert** between common formats (e.g., JPG → PDF, PDF → JPG, plus other tool routes)
-- **AI Summarizer tool** (optional, requires an API key for its network calls)
 
 ---
 
@@ -22,7 +21,6 @@ Zip2 is a browser-based web app that provides a collection of PDF and file utili
 - Vite
 - Tailwind CSS
 - PDF libraries: `pdf-lib`, `pdfjs-dist`
-- AI client (used by the AI Summarizer tool): `@google/genai`
 
 ---
 
@@ -40,14 +38,7 @@ npm install
 
 ### 2) Environment variables
 
-If you use the AI Summarizer tool, provide a Gemini API key via a local env file:
-
-1. Create a `.env.local` file in the project root
-2. Add:
-
-```env
-GEMINI_API_KEY=your_key_here
-```
+This app does not require environment variables to run most PDF tools.
 
 ### 3) Run the app
 
@@ -70,16 +61,16 @@ The available tools are defined in `src/constants.jsx` (the `TOOLS` array). `src
 
 ## Project structure (high level)
 
-- `index.html` – Vite entry HTML
-- `vite.config.js` – Vite configuration
-- `src/main.jsx` – React bootstrap
-- `src/App.jsx` – top-level layout + routes
-- `src/pages/` – page components (Home, ToolPage, Login, Signup)
-- `src/components/` – UI components
+- `index.html` — Vite entry HTML
+- `vite.config.js` — Vite configuration
+- `src/main.jsx` — React bootstrap
+- `src/App.jsx` — top-level layout + routes
+- `src/pages/` — page components (Home, ToolPage, Login, Signup)
+- `src/components/` — UI components
   - `src/components/layout/` (Navbar, Footer)
   - `src/components/home/` (ToolCard)
   - `src/components/tools/` (tool implementations)
-- `src/lib/` – helper utilities (notably `pdf-utils.js`)
+- `src/lib/` — helper utilities (notably `pdf-utils.js`)
 
 ---
 
@@ -87,15 +78,8 @@ The available tools are defined in `src/constants.jsx` (the `TOOLS` array). `src
 
 Common commands from `package.json`:
 
-- `npm run dev` – start Vite dev server
-- `npm run build` – build for production
-- `npm run preview` – preview production build
-- `npm run lint` – lint the codebase
-
----
-
-## Notes
-
-- If you encounter issues with the AI Summarizer tool, verify that `GEMINI_API_KEY` is set in `.env.local`.
-- Most other tools run in the browser; no backend server is required for them.
+- `npm run dev` — start Vite dev server
+- `npm run build` — build for production
+- `npm run preview` — preview production build
+- `npm run lint` — lint the codebase
 
